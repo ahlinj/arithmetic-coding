@@ -11,6 +11,8 @@ import random
 from arithmetic_encoder_core import encode
 from arithmetic_decoder_core import decode
 
+from huffman_encoder_core import huf_encode
+
 
 def create_random_sequence_from_prob(alphabet_chars, length, prob):
     return ''.join(random.choices(alphabet_chars, weights=prob, k=length))
@@ -49,21 +51,32 @@ if __name__ == '__main__':
 
     print(f"Original Sequence ({len(test_sequence)} chars): '{test_sequence}'")
 
-    # --- Encoding ---
+    # --- AC Encoding ---
     print("\nEncoding...")
     encoded_low, encoded_high = encode(test_sequence, alphabet)
     print(f"Encoded Interval: [{encoded_low}, {encoded_high})")
     print(f"Interval Width:   {encoded_high - encoded_low}")
     binary = interval_to_binary_decimal(encoded_low, encoded_high)
     print(f"Binary representation ({len(binary)} bits): {binary}")
+    
+    # --- Huffman Encoding ---
+    print("\nEncoding (Huffman)...")
+    huf_binary = huf_encode(test_sequence)
+    print(f"Binary representation (Huffman) ({len(huf_binary)} bits): {huf_binary}")
+    
+    # --- Binary Sequence Length Comparison
+    print(f"Arithmetic Encoding Binary Sequence Length: {len(binary)}")
+    print(f"Huffman Encoding Binary Sequence Length: {len(huf_binary)}")
+    len_dif = len(binary)-len(huf_binary)
+    print(f"Length Difference: {len_dif}")
 
-    # --- Decoding ---
+    # --- AC Decoding ---
     value_to_decode = encoded_low + (encoded_high - encoded_low) / 2
     print("\nDecoding...")
     decoded_sequence = decode(value_to_decode, len(test_sequence), alphabet)
     print(f"Decoded Sequence ({len(decoded_sequence)} chars): '{decoded_sequence}'")
 
-    # --- Verification ---
+    # --- AC Verification ---
     if test_sequence == decoded_sequence:
         print("\nSUCCESS: Decoded sequence matches the original.")
     else:
