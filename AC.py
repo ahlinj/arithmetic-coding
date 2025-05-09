@@ -43,32 +43,50 @@ def interval_to_binary_decimal(low: Decimal, high: Decimal):
 if __name__ == '__main__':
     # --- Configuration ---
     getcontext().prec = 150  # global Decimal precision
-
+    
     alphabet = ['a', 'b', 'c', 'd']
     prob_dist = [0.5, 0.3, 0.1, 0.1]
     seq_len = 100
-    test_sequence = create_random_sequence_from_prob(alphabet, seq_len, prob_dist)
-
-    print(f"Original Sequence ({len(test_sequence)} chars): '{test_sequence}'")
-
-    # --- AC Encoding ---
-    print("\nEncoding...")
-    encoded_low, encoded_high = encode(test_sequence, alphabet)
-    print(f"Encoded Interval: [{encoded_low}, {encoded_high})")
-    print(f"Interval Width:   {encoded_high - encoded_low}")
-    binary = interval_to_binary_decimal(encoded_low, encoded_high)
-    print(f"Binary representation ({len(binary)} bits): {binary}")
     
-    # --- Huffman Encoding ---
-    print("\nEncoding (Huffman)...")
-    huf_binary = huf_encode(test_sequence)
-    print(f"Binary representation (Huffman) ({len(huf_binary)} bits): {huf_binary}")
+    total_arith_len = 0
+    total_huff_len = 0
+    runs = 500
     
-    # --- Binary Sequence Length Comparison
-    print(f"Arithmetic Encoding Binary Sequence Length: {len(binary)}")
-    print(f"Huffman Encoding Binary Sequence Length: {len(huf_binary)}")
-    len_dif = len(binary)-len(huf_binary)
-    print(f"Length Difference: {len_dif}")
+    for _ in range(runs):
+        
+        test_sequence = create_random_sequence_from_prob(alphabet, seq_len, prob_dist)
+    
+        print(f"Original Sequence ({len(test_sequence)} chars): '{test_sequence}'")
+    
+        # --- AC Encoding ---
+        print("\nEncoding...")
+        encoded_low, encoded_high = encode(test_sequence, alphabet)
+        print(f"Encoded Interval: [{encoded_low}, {encoded_high})")
+        print(f"Interval Width:   {encoded_high - encoded_low}")
+        binary = interval_to_binary_decimal(encoded_low, encoded_high)
+        print(f"Binary representation ({len(binary)} bits): {binary}")
+        
+        total_arith_len += len(binary)
+        
+        # --- Huffman Encoding ---
+        print("\nEncoding (Huffman)...")
+        huf_binary = huf_encode(test_sequence)
+        print(f"Binary representation (Huffman) ({len(huf_binary)} bits): {huf_binary}")
+        
+        total_huff_len += len(huf_binary)
+        
+        # --- Binary Sequence Length Comparison
+        print(f"Arithmetic Encoding Binary Sequence Length: {len(binary)}")
+        print(f"Huffman Encoding Binary Sequence Length: {len(huf_binary)}")
+        len_dif = len(binary)-len(huf_binary)
+        print(f"Length Difference: {len_dif}")
+        
+    avg_arith_len = total_arith_len / runs
+    avg_huff_len = total_huff_len / runs
+    
+    print(f"Average Arithmetic Encoding Binary Sequence Length over {runs} runs: {avg_arith_len:.2f} bits")
+    print(f"Average Huffman Encoding Binary Sequence Length over {runs} runs: {avg_huff_len:.2f} bits")
+    print(f"Average Length Difference: {avg_arith_len - avg_huff_len:.2f} bits")
 
     # --- AC Decoding ---
     value_to_decode = encoded_low + (encoded_high - encoded_low) / 2
